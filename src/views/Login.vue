@@ -12,17 +12,17 @@ const state = reactive({
   },
 });
 const submit = async () => {
-  const res = await login(state.form);
+    const res = await login(state.form);
 
-  switch (res.status) {
-    case 200:
-      await router.push('/');
-      break;
-    case 404:
-      alert('아이디/비밀번호를 확인해 주세요.');
-      break;
-  }
-};
+    switch(res.status) {
+        case 200:
+            await router.push('/');
+            break;
+        case 404:
+            alert('아이디/비밀번호를 확인해 주세요.');
+            break;
+    }
+}
 </script>
 
 <template>
