@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { addItem } from '@/services/cartService';
 import { useAccountStore } from '@/stores/account';
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
     item: {
@@ -14,18 +15,29 @@ const props = defineProps({
 });
 
 const account = useAccountStore();
+
+const router = useRouter();
 //const computedItemDiscountPrice = computed(() => (props.item.price - (props.item.price * props.item.discountPer / 100)).toLocaleString() + '원');
 const computedItemDiscountPrice = computed(() => (props.item.price * ((100 - props.item.discountPer) * 0.01)).toLocaleString() + '원');
 
 const put = async () => {
-    if(account.state.loggedIn === false) {
+    if (account.state.loggedIn === false) {
         alert('로그인 하세요.');
         return;
     }
     const res = await addItem(props.item.id);
-    if (res === undefined || res.status !== 200) { return; }
-    console.log('카트 담기 성공!');
+    if (res === undefined) {
+        alert('서버에 문제가 있습니다.');
+    } else if (res.status === 500) {
+        alert('이미 장바구니에 담겨져 있습니다.');
+    }
+    else if (res.status === 200 && confirm('장바구니에 상품을 담았습니다. 장바구니로 이동하시겠습니까?')) {
+        // 장바구니 화면으로 라우팅
+        console.log('카트 담기 성공!');
+        router.push('/cart');
+    }
 }
+
 </script>
 
 <template>

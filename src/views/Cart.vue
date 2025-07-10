@@ -1,32 +1,40 @@
 <script setup>
+import { getItems, removeItem, removeAll } from '@/services/cartService';
 import { reactive, onMounted } from 'vue';
-import { getItems } from '@/services/cartService';
-
-const state = reactive({
-  items: [],
-});
-
+const state = reactive({ items: [] });
 const load = async () => {
     const res = await getItems();
-    console.log('res', res);
-    if (res.status !== 200) {
+    if(res === undefined || res.status !== 200) {
         return;
     }
     state.items = res.data;
+}
+const remove = async cartId => {
+  const res = await removeItem(cartId);
+  console.log(res);
+    if(res === undefined || res.status !== 200) {
+        return;
+    }
+    load();
+    //다시 리로딩
+    //or
+    //방금 삭제한 객체만 state.items에서 삭제한다.
+}
+// const res = await removeAllItem(cardId) {
+
+// }
+const clear = async () => {
+  const res = await removeAll();
+  if (res === undefined || res.status !== 200) {
+    return;
+  }
+  state.items = [];
 };
+
 
 onMounted(() => {
     load();
 });
-const remove = async (itemId) => {
-    const res = await removeItem(itemId)
-
-    if (res.status === 200) {
-        alert('선택하신 장바구니의 상품을 삭제했습니다.')
-        await load();
-    }
-};
-
 </script>
 
 <template>
@@ -53,11 +61,13 @@ const remove = async (itemId) => {
             >
           </li>
         </ul>
-        <div class="act">
-          <router-link to="/order" class="btn btn-primary"
-            >주문하기</router-link
-          >
+        <div class="act d-flex justify-">
+
+          <button @click="clear" class="btn btn-danger">장바구니 비우기</button>
+          <router-link to="/order" class="btn btn-primary">주문하기</router-link>
         </div>
+        <!-- <div class="act">
+        </div> -->
       </template>
       <div class="text-center py-5" v-else>장바구니가 비었습니다.</div>
     </div>
