@@ -2,7 +2,7 @@
 import { reactive, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getItems } from '@/services/cartService';
-import { addOrder } from '@/services/OrderService';
+import { addOrder } from '@/services/orderService';
 
 const router = useRouter();
 
@@ -27,9 +27,20 @@ const submit = async () => {
         state.form.cardNumber = '';
     };
     state.form.itemIds = state.items.map(item => item.itemId);
-    const res = await addOrder(state.form);
-
+  const res = await addOrder(state.form);
+  if (res === undefined || res.status !== 200) {
+    alert('에러 발생');
+    return;
+    }
+  const message = ['주문이 완료되었습니다.'];
+  if (state.form.payment === 'bank') {
+    const price = computedTotalPrice.value.toLocaleString();
+    message.push(`한국은행 123-456-777 계좌로 ${price}원을 입금해주시기 바랍니다.`);
+  }
+  alert(message.join('\n'));
+  await router.push('/');
 };
+
 const computedTotalPrice = computed(() => {
   if (!state.items || state.items.length === 0) return 0;
 
