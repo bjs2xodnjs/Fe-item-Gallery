@@ -79,12 +79,14 @@ onMounted(async () => {
             <thead>
             <tr>
                 <th>번호</th>
+                <th>이미지</th>
                 <td>상품명</td>
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(item, idx) in state.order.items">
+            <tr v-for="(item, idx) in state.order.items" :key="item.id">
                 <td>{{ idx + 1 }}</td>
+                <td><img :src="`/pic/item/${item.imgPath}`" alt="테스트" /></td>
                 <td>{{ item.name }}</td>
             </tr>
             </tbody>
@@ -98,6 +100,7 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
+table img { width: 150px; }
 .order-detail {
   > .container {
     table {
